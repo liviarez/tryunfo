@@ -8,30 +8,56 @@ class App extends React.Component {
     this.state = {
       cardName: '',
       cardDescription: '',
-      cardAttr1: '',
-      cardAttr2: '',
-      cardAttr3: '',
+      cardAttr1: '0',
+      cardAttr2: '0',
+      cardAttr3: '0',
       cardImage: '',
       cardRare: '',
       cardTrunfo: false,
       /* hasTrunfo: false, */
-      isSaveButtonDisabled: false,
+      isSaveButtonDisabled: true,
     };
   }
+
+  onSaveButtonClick = () => {
+    const sumMax = 210;
+    const maxPoint = 90;
+
+    const { cardName,
+      cardDescription,
+      cardImage,
+      cardAttr1,
+      cardAttr2,
+      cardAttr3 } = this.state;
+
+    const isStringValid = cardName && cardImage && cardDescription;
+    // A soma dos valores dos 3 atributos (attr1-input, attr2-input e attr3-input) não pode ultrapassar o valor 210.
+    const isSumValid = (+cardAttr1)
+      + (+cardAttr2)
+      + (+cardAttr3) <= sumMax;
+
+    const totalPointsAttr1 = cardAttr1 >= 0 && cardAttr1 <= maxPoint;
+    const totalPointsAttr2 = cardAttr2 >= 0 && cardAttr2 <= maxPoint;
+    const totalPointsAttr3 = cardAttr3 >= 0 && cardAttr3 <= maxPoint;
+
+    this.setState(() => ({
+      isSaveButtonDisabled: !(isStringValid
+        && isSumValid
+        && totalPointsAttr1
+        && totalPointsAttr2
+        && totalPointsAttr3),
+    }));
+  };
 
   onInputChange = ({ target }) => {
     const { name, value, type, checked } = target;
     const cardInfo = type === 'checkbox' ? checked : value;
-    console.log(cardInfo);
-    this.setState(() => ({
+    this.setState((prev) => ({
+      ...prev.state,
       [name]: cardInfo,
-    }));
-  };
-
-  onSaveButtonClick = () => {
-    // Logic for handling the save button click
-    // You can access the form data from the component state and perform the necessary actions.
-    console.log('Save button clicked');
+    }), () => {
+      this.onSaveButtonClick();
+    });
   };
 
   render() {
@@ -50,6 +76,7 @@ class App extends React.Component {
       <div>
         <h1>Tryunfo</h1>
         <Form
+          { ...this.state }
           cardName={ cardName }
           cardDescription={ cardDescription }
           cardAttr1={ cardAttr1 }
@@ -81,4 +108,5 @@ class App extends React.Component {
 }
 
 // ... spread operator - unpacks elements from arrays or objects, allowing you to combine or copy them easily.
+//
 export default App;
