@@ -14,15 +14,15 @@ class App extends React.Component {
       cardImage: '',
       cardRare: '',
       cardTrunfo: false,
-      /* hasTrunfo: false, */
+      hasTrunfo: false,
       isSaveButtonDisabled: true,
+      allCards: [],
     };
   }
 
-  onSaveButtonClick = () => {
+  validateEnableButton = () => {
     const sumMax = 210;
     const maxPoint = 90;
-
     const { cardName,
       cardDescription,
       cardImage,
@@ -49,6 +49,43 @@ class App extends React.Component {
     }));
   };
 
+  onSaveButtonClick = () => {
+    const { cardName,
+      cardDescription,
+      cardImage,
+      cardRare,
+      cardTrunfo,
+      cardAttr1,
+      cardAttr2,
+      cardAttr3,
+      allCards } = this.state;
+    const newCard = {
+      cardName,
+      cardDescription,
+      cardImage,
+      cardRare,
+      cardTrunfo,
+      cardAttr1,
+      cardAttr2,
+      cardAttr3,
+    };
+    allCards.push(...allCards, newCard);
+
+    this.setState(() => ({
+      cardName: '',
+      cardDescription: '',
+      cardAttr1: '0',
+      cardAttr2: '0',
+      cardAttr3: '0',
+      cardImage: '',
+      cardRare: 'normal',
+      cardTrunfo: false,
+      hasTrunfo: false,
+      isSaveButtonDisabled: true,
+      allCards,
+    }));
+  };
+
   onInputChange = ({ target }) => {
     const { name, value, type, checked } = target;
     const cardInfo = type === 'checkbox' ? checked : value;
@@ -56,7 +93,7 @@ class App extends React.Component {
       ...prev.state,
       [name]: cardInfo,
     }), () => {
-      this.onSaveButtonClick();
+      this.validateEnableButton();
     });
   };
 
@@ -90,6 +127,7 @@ class App extends React.Component {
           onSaveButtonClick={ this.onSaveButtonClick }
         />
         <Card
+          { ...this.state }
           cardName={ cardName }
           cardDescription={ cardDescription }
           cardAttr1={ cardAttr1 }
