@@ -28,7 +28,8 @@ class App extends React.Component {
       cardImage,
       cardAttr1,
       cardAttr2,
-      cardAttr3 } = this.state;
+      cardAttr3,
+    } = this.state;
 
     const isStringValid = cardName && cardImage && cardDescription;
     // A soma dos valores dos 3 atributos (attr1-input, attr2-input e attr3-input) não pode ultrapassar o valor 210.
@@ -45,7 +46,9 @@ class App extends React.Component {
         && isSumValid
         && totalPointsAttr1
         && totalPointsAttr2
-        && totalPointsAttr3),
+        && totalPointsAttr3
+
+      ),
     }));
   };
 
@@ -71,6 +74,8 @@ class App extends React.Component {
     };
     allCards.push(...allCards, newCard);
 
+    console.log(cardTrunfo);
+
     this.setState(() => ({
       cardName: '',
       cardDescription: '',
@@ -86,12 +91,23 @@ class App extends React.Component {
     }));
   };
 
+  doesItHaveTrunfo = () => {
+    const { allCards } = this.state;
+    const hasTrunfo = allCards.some((card) => card.cardTrunfo);
+    this.setState({
+      hasTrunfo,
+    });
+    return hasTrunfo;
+  };
+
   onInputChange = ({ target }) => {
     const { name, value, type, checked } = target;
     const cardInfo = type === 'checkbox' ? checked : value;
+
     this.setState((prev) => ({
       ...prev.state,
       [name]: cardInfo,
+      hasTrunfo: this.doesItHaveTrunfo(),
     }), () => {
       this.validateEnableButton();
     });
