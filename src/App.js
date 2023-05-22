@@ -58,6 +58,7 @@ class App extends React.Component {
       cardImage,
       cardRare,
       cardTrunfo,
+      hasTrunfo,
       cardAttr1,
       cardAttr2,
       cardAttr3,
@@ -72,9 +73,7 @@ class App extends React.Component {
       cardAttr2,
       cardAttr3,
     };
-    allCards.push(...allCards, newCard);
-
-    console.log(cardTrunfo);
+    // allCards.push(newCard); mesma coisa que a linha 88. O push sempre puxa para dentro do array
 
     this.setState(() => ({
       cardName: '',
@@ -85,19 +84,11 @@ class App extends React.Component {
       cardImage: '',
       cardRare: 'normal',
       cardTrunfo: false,
-      hasTrunfo: false,
+      hasTrunfo: cardTrunfo || hasTrunfo,
+      // cardTrunfo ? cardTrunfo : hasTrunfo,
       isSaveButtonDisabled: true,
-      allCards,
+      allCards: [...allCards, newCard],
     }));
-  };
-
-  doesItHaveTrunfo = () => {
-    const { allCards } = this.state;
-    const hasTrunfo = allCards.some((card) => card.cardTrunfo);
-    this.setState({
-      hasTrunfo,
-    });
-    return hasTrunfo;
   };
 
   onInputChange = ({ target }) => {
@@ -107,7 +98,6 @@ class App extends React.Component {
     this.setState((prev) => ({
       ...prev.state,
       [name]: cardInfo,
-      hasTrunfo: this.doesItHaveTrunfo(),
     }), () => {
       this.validateEnableButton();
     });
@@ -124,6 +114,7 @@ class App extends React.Component {
       cardRare,
       cardTrunfo,
       isSaveButtonDisabled,
+      allCards,
     } = this.state;
     return (
       <div>
@@ -142,20 +133,36 @@ class App extends React.Component {
           isSaveButtonDisabled={ isSaveButtonDisabled }
           onSaveButtonClick={ this.onSaveButtonClick }
         />
-        <Card
-          { ...this.state }
-          cardName={ cardName }
-          cardDescription={ cardDescription }
-          cardAttr1={ cardAttr1 }
-          cardAttr2={ cardAttr2 }
-          cardAttr3={ cardAttr3 }
-          cardImage={ cardImage }
-          cardRare={ cardRare }
-          cardTrunfo={ cardTrunfo }
-        />
-        <section>
-          {}
-        </section>
+        <Card { ...this.state } />
+        <div className="container">
+          <section className="Card__content">
+            {allCards.map((card) => (
+              <div key={ card.cardName }>
+                <Card
+                  cardName={ card.cardName }
+                  cardDescription={ card.cardDescription }
+                  cardAttr1={ card.cardAttr1 }
+                  cardAttr2={ card.cardAttr2 }
+                  cardAttr3={ card.cardAttr3 }
+                  cardImage={ card.cardImage }
+                  cardRare={ card.cardRare }
+                  cardTrunfo={ card.cardTrunfo }
+                />
+                <button
+                  type="button"
+                  data-testid="delete-button"
+                  id={ card.cardName }
+                  onClick={ this.cardDeleter }
+                >
+                  Excluir
+                </button>
+              </div>
+            ))}
+          </section>
+          <section>
+            {}
+          </section>
+        </div>
       </div>
     );
   }

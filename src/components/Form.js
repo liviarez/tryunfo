@@ -100,7 +100,7 @@ export default class Form extends Component {
             </select>
           </label>
           {
-            hasTrunfo === true ? <p>Você já tem um Super Trunfo em seu baralho</p> : (
+            hasTrunfo ? <p>Você já tem um Super Trunfo em seu baralho</p> : (
               <label>
                 Super Trunfo:
                 <input
