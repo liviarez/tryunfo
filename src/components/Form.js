@@ -21,7 +21,7 @@ export default class Form extends Component {
       <div>
         <form>
           <label>
-            Name:
+            Nome:
             <input
               type="text"
               onChange={ onInputChange }

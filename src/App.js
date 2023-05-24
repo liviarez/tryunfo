@@ -23,7 +23,8 @@ class App extends React.Component {
   validateEnableButton = () => {
     const sumMax = 210;
     const maxPoint = 90;
-    const { cardName,
+    const {
+      cardName,
       cardDescription,
       cardImage,
       cardAttr1,
@@ -33,27 +34,26 @@ class App extends React.Component {
 
     const isStringValid = cardName && cardImage && cardDescription;
     // A soma dos valores dos 3 atributos (attr1-input, attr2-input e attr3-input) não pode ultrapassar o valor 210.
-    const isSumValid = (+cardAttr1)
-      + (+cardAttr2)
-      + (+cardAttr3) <= sumMax;
+    const isSumValid = +cardAttr1 + +cardAttr2 + +cardAttr3 <= sumMax;
 
     const totalPointsAttr1 = cardAttr1 >= 0 && cardAttr1 <= maxPoint;
     const totalPointsAttr2 = cardAttr2 >= 0 && cardAttr2 <= maxPoint;
     const totalPointsAttr3 = cardAttr3 >= 0 && cardAttr3 <= maxPoint;
 
     this.setState(() => ({
-      isSaveButtonDisabled: !(isStringValid
+      isSaveButtonDisabled: !(
+        isStringValid
         && isSumValid
         && totalPointsAttr1
         && totalPointsAttr2
         && totalPointsAttr3
-
       ),
     }));
   };
 
   onSaveButtonClick = () => {
-    const { cardName,
+    const {
+      cardName,
       cardDescription,
       cardImage,
       cardRare,
@@ -62,7 +62,8 @@ class App extends React.Component {
       cardAttr1,
       cardAttr2,
       cardAttr3,
-      allCards } = this.state;
+      allCards,
+    } = this.state;
     const newCard = {
       cardName,
       cardDescription,
@@ -73,7 +74,6 @@ class App extends React.Component {
       cardAttr2,
       cardAttr3,
     };
-    // allCards.push(newCard); mesma coisa que a linha 88. O push sempre puxa para dentro do array
 
     this.setState(() => ({
       cardName: '',
@@ -91,16 +91,40 @@ class App extends React.Component {
     }));
   };
 
+  onDeleteButtonClick = (cardName) => {
+    const { allCards } = this.state;
+    // Expects to filter all cards ins the array but the selected one
+    const updatedAllCards = allCards.filter((card) => card
+      .cardName !== cardName.target.id);
+    // Expects to find matching Super Trunfo in HTML
+    const isRemovedCardTrunfo = cardName.target
+      .previousElementSibling
+      .lastChild.textContent === 'Super Trunfo';
+    // Expects hasTrunfo to be false if found the Super Trunfo in HTML
+    if (isRemovedCardTrunfo) {
+      this.setState(() => ({
+        allCards: updatedAllCards,
+        hasTrunfo: false,
+      }));
+    }
+    this.setState(() => ({
+      allCards: updatedAllCards,
+    }));
+  };
+
   onInputChange = ({ target }) => {
     const { name, value, type, checked } = target;
     const cardInfo = type === 'checkbox' ? checked : value;
 
-    this.setState((prev) => ({
-      ...prev.state,
-      [name]: cardInfo,
-    }), () => {
-      this.validateEnableButton();
-    });
+    this.setState(
+      (prev) => ({
+        ...prev.state,
+        [name]: cardInfo,
+      }),
+      () => {
+        this.validateEnableButton();
+      },
+    );
   };
 
   render() {
@@ -113,9 +137,10 @@ class App extends React.Component {
       cardImage,
       cardRare,
       cardTrunfo,
-      isSaveButtonDisabled,
       allCards,
+      isSaveButtonDisabled,
     } = this.state;
+
     return (
       <div>
         <h1>Tryunfo</h1>
@@ -152,16 +177,14 @@ class App extends React.Component {
                   type="button"
                   data-testid="delete-button"
                   id={ card.cardName }
-                  onClick={ this.cardDeleter }
+                  onClick={ this.onDeleteButtonClick }
                 >
                   Excluir
                 </button>
               </div>
             ))}
           </section>
-          <section>
-            {}
-          </section>
+          <section>{}</section>
         </div>
       </div>
     );
