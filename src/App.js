@@ -18,6 +18,8 @@ class App extends React.Component {
       isSaveButtonDisabled: true,
       allCards: [],
       filteredCards: [],
+      nameSearch: '',
+      selectRare: 'todas',
     };
   }
 
@@ -114,30 +116,6 @@ class App extends React.Component {
     }));
   };
 
-  filterByCardName = ({ target }) => {
-    const { allCards } = this.state;
-    const filteredCard = allCards.filter((card) => card.cardName.includes(target.value));
-
-    this.setState(() => ({
-      allCards: filteredCard,
-    }));
-  };
-
-  filterByRarity = ({ target }) => {
-    const { allCards } = this.state;
-
-    this.setState(() => {
-      if (target.value === 'todas') {
-        return { filteredCards: allCards };
-      }
-      return {
-        filteredCards: allCards.filter(
-          (card) => card.cardRare === target.value,
-        ),
-      };
-    });
-  };
-
   onInputChange = ({ target }) => {
     const { name, value, type, checked } = target;
     const cardInfo = type === 'checkbox' ? checked : value;
@@ -165,8 +143,13 @@ class App extends React.Component {
       cardTrunfo,
       allCards,
       isSaveButtonDisabled,
-      filteredCards,
+      nameSearch,
+      selectRare,
     } = this.state;
+
+    const filter = allCards.filter((card) => card.cardName.toLowerCase()
+      .includes(nameSearch.toLowerCase()))
+      .filter((card) => card.cardRare === selectRare || selectRare === 'todas');
 
     return (
       <div>
@@ -188,18 +171,20 @@ class App extends React.Component {
         <div>
           <h1>TODAS AS CARTAS</h1>
           <label>
-            Filtros de busca:
+            Filtro de busca:
             <input
               type="text"
               data-testid="name-filter"
               placeholder="Nome da Carta"
-              onChange={ this.filterByCardName }
+              onChange={ this.onInputChange }
+              value={ nameSearch }
+              name="nameSearch"
             />
           </label>
           <select
             data-testid="rare-filter"
-            onChange={ this.filterByRarity }
-            /* disabled={ disabledFilters } */
+            onChange={ this.onInputChange }
+            name="selectRare"
           >
             <option value="todas">Todas</option>
             <option value="normal">Normal</option>
@@ -208,61 +193,32 @@ class App extends React.Component {
           </select>
         </div>
         <Card { ...this.state } />
-        {filteredCards.length > 0 ? (
-          <div className="container">
-            <section className="Card__content">
-              {filteredCards.map((card) => (
-                <div key={ card.cardName }>
-                  <Card
-                    cardName={ card.cardName }
-                    cardDescription={ card.cardDescription }
-                    cardAttr1={ card.cardAttr1 }
-                    cardAttr2={ card.cardAttr2 }
-                    cardAttr3={ card.cardAttr3 }
-                    cardImage={ card.cardImage }
-                    cardRare={ card.cardRare }
-                    cardTrunfo={ card.cardTrunfo }
-                  />
-                  <button
-                    type="button"
-                    data-testid="delete-button"
-                    id={ card.cardName }
-                    onClick={ this.onDeleteButtonClick }
-                  >
-                    Excluir
-                  </button>
-                </div>
-              ))}
-            </section>
-          </div>
-        ) : (
-          <div className="container">
-            <section className="Card__content">
-              {allCards.map((card) => (
-                <div key={ card.cardName }>
-                  <Card
-                    cardName={ card.cardName }
-                    cardDescription={ card.cardDescription }
-                    cardAttr1={ card.cardAttr1 }
-                    cardAttr2={ card.cardAttr2 }
-                    cardAttr3={ card.cardAttr3 }
-                    cardImage={ card.cardImage }
-                    cardRare={ card.cardRare }
-                    cardTrunfo={ card.cardTrunfo }
-                  />
-                  <button
-                    type="button"
-                    data-testid="delete-button"
-                    id={ card.cardName }
-                    onClick={ this.onDeleteButtonClick }
-                  >
-                    Excluir
-                  </button>
-                </div>
-              ))}
-            </section>
-          </div>
-        )}
+        <div className="container">
+          <section className="Card__content">
+            {filter.map((card) => (
+              <div key={ card.cardName }>
+                <Card
+                  cardName={ card.cardName }
+                  cardDescription={ card.cardDescription }
+                  cardAttr1={ card.cardAttr1 }
+                  cardAttr2={ card.cardAttr2 }
+                  cardAttr3={ card.cardAttr3 }
+                  cardImage={ card.cardImage }
+                  cardRare={ card.cardRare }
+                  cardTrunfo={ card.cardTrunfo }
+                />
+                <button
+                  type="button"
+                  data-testid="delete-button"
+                  id={ card.cardName }
+                  onClick={ this.onDeleteButtonClick }
+                >
+                  Excluir
+                </button>
+              </div>
+            ))}
+          </section>
+        </div>
       </div>
     );
   }
